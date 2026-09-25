@@ -22,7 +22,7 @@ public class CartaoJpaEntity implements Persistable<String> {
     @Column(name = "numero_cartao", length = 16, nullable = false)
     private String numeroCartao;
 
-    @Column(name = "senha", length = 4, nullable = false)
+    @Column(name = "senha", length = 255, nullable = false)
     private String senha;
 
     @Column(name = "saldo", precision = 19, scale = 2, nullable = false)
