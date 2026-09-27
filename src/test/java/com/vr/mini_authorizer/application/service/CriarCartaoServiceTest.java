@@ -19,6 +19,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+/**
+ * testes do caso de uso "criar cartão", com o repositório mockado
+ */
 @ExtendWith(MockitoExtension.class)
 class CriarCartaoServiceTest {
 

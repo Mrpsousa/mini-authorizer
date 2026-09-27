@@ -8,6 +8,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+/**
+ * testes do value object Senha (só Java, sem Spring)
+ */
 class SenhaTest {
 
     @Test
@@ -24,6 +27,7 @@ class SenhaTest {
                 .hasMessageContaining("nula ou vazia");
     }
 
+    // o README não define tamanho nem formato da senha
     @ParameterizedTest
     @ValueSource(strings = {"1", "123", "12345", "abcd", "s3nh@ l0nga!"})
     void aceitaSenhaDeQualquerTamanhoOuFormato(String valor) {

@@ -10,6 +10,9 @@ import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * testes da conversão domínio <-> entidade JPA
+ */
 class CartaoMapperTest {
 
     @Test

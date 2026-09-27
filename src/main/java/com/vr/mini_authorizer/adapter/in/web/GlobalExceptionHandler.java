@@ -2,7 +2,9 @@ package com.vr.mini_authorizer.adapter.in.web;
 
 import com.vr.mini_authorizer.adapter.in.web.dto.CartaoResponse;
 import com.vr.mini_authorizer.domain.exception.CartaoJaExisteException;
+import com.vr.mini_authorizer.domain.exception.TransacaoRecusadaException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -25,6 +27,17 @@ public class GlobalExceptionHandler {
     public ResponseEntity<CartaoResponse> tratarCartaoJaExiste(CartaoJaExisteException ex) {
         CartaoResponse response = new CartaoResponse(ex.senha(), ex.numeroCartao());
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT).body(response);
+    }
+
+    /**
+     * regra de autorização barrou a transação → HTTP 422, corpo em texto puro
+     * com o motivo (SALDO_INSUFICIENTE|SENHA_INVALIDA|CARTAO_INEXISTENTE)
+     */
+    @ExceptionHandler(TransacaoRecusadaException.class)
+    public ResponseEntity<String> tratarTransacaoRecusada(TransacaoRecusadaException ex) {
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT)
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(ex.motivo().name());
     }
 
     /**

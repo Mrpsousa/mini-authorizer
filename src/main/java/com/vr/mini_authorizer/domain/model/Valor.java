@@ -21,9 +21,23 @@ public final class Valor {
         return new Valor(new BigDecimal(quantia).setScale(2, RoundingMode.UNNECESSARY));
     }
 
-    /** Fábrica a partir de um {@code BigDecimal} já existente (ex.: vindo do banco). */
+    /** factory a partir de um bigDecimal já existente (ex.: vindo do banco). */
     public static Valor de(BigDecimal quantia) {
         return new Valor(quantia.setScale(2, RoundingMode.UNNECESSARY));
+    }
+
+    /**
+     * novo Valor com a diferença (this - outro); Valor é imutável.
+     */
+    public Valor menos(Valor outro) {
+        return new Valor(quantia.subtract(outro.quantia));
+    }
+
+    /**
+     * true se este valor for suficiente para cobrir o outro (this >= outro)
+     */
+    public boolean cobre(Valor outro) {
+        return quantia.compareTo(outro.quantia) >= 0;
     }
 
     public BigDecimal bigDecimal() {

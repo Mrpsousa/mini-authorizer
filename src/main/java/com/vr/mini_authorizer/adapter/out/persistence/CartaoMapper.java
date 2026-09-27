@@ -13,6 +13,7 @@ public final class CartaoMapper {
     private CartaoMapper() {
     }
 
+    // só para cartão novo: a entidade sai marcada como nova (INSERT)
     public static CartaoJpaEntity toEntity(Cartao cartao) {
         return new CartaoJpaEntity(
                 cartao.numero().valor(),
@@ -21,6 +22,7 @@ public final class CartaoMapper {
         );
     }
 
+    // usa reconstituir, para manter o saldo que veio do banco
     public static Cartao toDomain(CartaoJpaEntity entity) {
         return Cartao.reconstituir(
                 NumeroCartao.de(entity.getNumeroCartao()),

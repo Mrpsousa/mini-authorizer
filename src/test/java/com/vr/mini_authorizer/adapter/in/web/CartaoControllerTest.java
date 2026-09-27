@@ -2,6 +2,7 @@ package com.vr.mini_authorizer.adapter.in.web;
 
 import com.vr.mini_authorizer.application.port.in.CartaoCriado;
 import com.vr.mini_authorizer.application.port.in.CriarCartaoCommand;
+import com.vr.mini_authorizer.application.port.in.ConsultarSaldoUseCase;
 import com.vr.mini_authorizer.application.port.in.CriarCartaoUseCase;
 import com.vr.mini_authorizer.domain.exception.CartaoJaExisteException;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,26 +14,37 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.math.BigDecimal;
+import java.util.Optional;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+/**
+ * testes da camada web de cartões: status e corpo de cada resposta do contrato
+ */
 @ExtendWith(MockitoExtension.class)
 class CartaoControllerTest {
 
     @Mock
     private CriarCartaoUseCase useCase;
 
+    @Mock
+    private ConsultarSaldoUseCase consultarSaldo;
+
     private MockMvc mockMvc;
 
+    // MockMvc standalone: sem subir o Spring nem a segurança
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(new CartaoController(useCase))
+        mockMvc = MockMvcBuilders.standaloneSetup(new CartaoController(useCase, consultarSaldo))
                 .setControllerAdvice(new GlobalExceptionHandler())
                 .build();
     }
@@ -99,5 +111,31 @@ class CartaoControllerTest {
         postar("{\"numeroCartao\":\"6549873025634501\",\"senha\":\"1234\"}")
                 .andExpect(status().isBadRequest())
                 .andExpect(content().json("{\"erro\":\"dado inválido\"}"));
+    }
+
+    @Test
+    void consultarSaldoRetorna200ComOValorNoCorpo() throws Exception {
+        when(consultarSaldo.consultar("6549873025634501")).thenReturn(Optional.of(new BigDecimal("495.15")));
+
+        mockMvc.perform(get("/cartoes/6549873025634501"))
+                .andExpect(status().isOk())
+                .andExpect(content().string("495.15"));
+    }
+
+    @Test
+    void consultarSaldoDeCartaoInexistenteRetorna404SemCorpo() throws Exception {
+        when(consultarSaldo.consultar("6549873025634501")).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/cartoes/6549873025634501"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string(""));
+    }
+
+    @Test
+    void consultarSaldoComNumeroMalformadoRetorna400() throws Exception {
+        when(consultarSaldo.consultar("123")).thenThrow(new IllegalArgumentException("Número do cartão deve conter exatamente 16 dígitos numéricos"));
+
+        mockMvc.perform(get("/cartoes/123"))
+                .andExpect(status().isBadRequest());
     }
 }

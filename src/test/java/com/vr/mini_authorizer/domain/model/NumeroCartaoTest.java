@@ -8,6 +8,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+/**
+ * testes do value object NumeroCartao (só Java, sem Spring)
+ */
 class NumeroCartaoTest {
 
     @Test

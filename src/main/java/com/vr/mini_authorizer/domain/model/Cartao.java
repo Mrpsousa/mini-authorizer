@@ -1,5 +1,8 @@
 package com.vr.mini_authorizer.domain.model;
 
+import com.vr.mini_authorizer.domain.exception.MotivoRecusa;
+import com.vr.mini_authorizer.domain.exception.TransacaoRecusadaException;
+
 /**
  * entidade de domínio "Cartão", classe não tem nenhuma annotations,
  * isolando o domínio, e pode ser testado sem subir nada além do
@@ -38,6 +41,20 @@ public class Cartao {
      */
     public static Cartao reconstituir(NumeroCartao numero, Senha senha, Valor saldo) {
         return new Cartao(numero, senha, saldo);
+    }
+
+    /**
+     * aplica as regras de autorização que dependem do cartão (senha e saldo),
+     * nessa ordem, e debita o valor. Se alguma regra falhar, o saldo não muda.
+     */
+    public void debitar(Senha senhaInformada, Valor valor) {
+        if (!senha.confere(senhaInformada)) {
+            throw new TransacaoRecusadaException(MotivoRecusa.SENHA_INVALIDA);
+        }
+        if (!saldo.cobre(valor)) {
+            throw new TransacaoRecusadaException(MotivoRecusa.SALDO_INSUFICIENTE);
+        }
+        this.saldo = saldo.menos(valor);
     }
 
     public NumeroCartao numero() {

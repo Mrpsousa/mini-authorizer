@@ -75,4 +75,10 @@ public class CartaoJpaEntity implements Persistable<String> {
     public BigDecimal getSaldo() {
         return saldo;
     }
+
+    // usado no débito: a entidade já está gerenciada pelo Hibernate, que
+    // gera o UPDATE no commit (dirty checking)
+    public void atualizarSaldo(BigDecimal novoSaldo) {
+        this.saldo = novoSaldo;
+    }
 }
