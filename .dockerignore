@@ -1,0 +1,9 @@
+target/
+.git/
+.idea/
+.vscode/
+RandomDocs/
+*.md
+*.MD
+scripts/
+docker-compose.yml
